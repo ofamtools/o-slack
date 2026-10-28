@@ -6,7 +6,7 @@ require (
 	charm.land/bubbletea/v2 v2.1.0
 	github.com/charmbracelet/x/ansi v0.11.9
 	github.com/modelcontextprotocol/go-sdk v1.6.1
-	github.com/unixsuperhero/o-mcp v0.0.0-20261028063716-9761b589c60c
+	github.com/unixsuperhero/o-mcp v0.0.0-20261028153033-c9a3b072172a
 	github.com/unixsuperhero/ochazuke v0.25.0
 	github.com/unixsuperhero/oden v0.1.1
 )
@@ -43,5 +43,3 @@ require (
 	golang.org/x/sys v0.47.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/unixsuperhero/o-mcp => ../../../o-mcp/.worktrees/oauth
