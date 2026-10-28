@@ -215,10 +215,7 @@ func (t *Tool) define() {
 		Verb("show", t.onChannel(t.showChannel), "Show one channel's record").Fetch().
 		Verb("open", t.onChannel(t.openChannel), "Open the channel in the browser (needs slack.workspace-url and its ID)").
 		Verb("copy-link", t.onChannel(t.copyChannelLink), "Copy the channel's link to the clipboard and answer it").
-		// No Rows(messageNoun) here: ochazuke's CatalogDoc.RowSource takes the
-		// first verb (sorted) declaring rows, which would make history, not
-		// list, the channel noun's row source in a host (workaround; o-plans todo).
-		Verb("history", t.onChannel(t.channelHistory), "Read the channel's recent messages as rows").Fetch().
+		Verb("history", t.onChannel(t.channelHistory), "Read the channel's recent messages as rows").Rows(messageNoun).Fetch().
 		Verb("watch", t.onChannel(t.watchChannel), "Watch the channel: its every message becomes a signal").
 		Verb("unwatch", t.onChannel(t.unwatchChannel), "Stop watching the channel").
 		Verb("ignore", t.onChannel(t.ignoreChannel), "Ignore the channel: its mentions and replies go to Ignored (DMs and on-call still count)").

@@ -37,4 +37,4 @@ Family plans, todos and the roadmap live in `~/hub/o-plans/` (`README.md` is the
 - Tests use the fake MCP server (in memory) and a fake inbox. They reach no Slack, no real MCP server and no mtm. Live verification happens on the work machine only (README, "On the work machine").
 - Every commit: `gofmt -l . && go vet ./... && go test -race ./...` green (`GOWORK=off GOFLAGS=-trimpath`), and `go run . catalog` answers. No amends.
 
-Build: `go build -o ~/bin/o-slack .`. Pinned in `go.mod`: ochazuke `v0.25.0`, oden `v0.1.1`; o-mcp is replaced by its `oauth` worktree during the sign-in lane (the coordinator pins it). o-mcp is private: fetch with `GOPRIVATE=github.com/unixsuperhero/* GOPROXY=direct`.
+Build: `go build -o ~/bin/o-slack .`. Pinned in `go.mod`: ochazuke `v0.31.0`, oden `v0.1.1`; o-mcp is replaced by its `oauth` worktree during the sign-in lane (the coordinator pins it). o-mcp is private: fetch with `GOPRIVATE=github.com/unixsuperhero/* GOPROXY=direct`.

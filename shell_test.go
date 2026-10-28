@@ -76,10 +76,15 @@ func TestCatalog(t *testing.T) {
 			t.Errorf("catalog lacks %s", want)
 		}
 	}
+	// Each noun's row source is its list (ochazuke v0.31.0 prefers the
+	// noun's own rows), though dms and history declare message rows too.
 	for noun, rows := range map[string]string{messageNoun: messageNoun, channelNoun: channelNoun} {
-		if verb, got := doc.RowSource(noun); verb == "" || got != rows {
-			t.Errorf("%s row source %q %q", noun, verb, got)
+		if verb, got := doc.RowSource(noun); verb != "list" || got != rows {
+			t.Errorf("%s row source %q %q, want list %q", noun, verb, got, rows)
 		}
+	}
+	if !verbRows(doc, channelNoun, "history", messageNoun) {
+		t.Errorf("%s.history does not declare %s rows", channelNoun, messageNoun)
 	}
 	// No verb writes to Slack, and the catalog needs no server.
 	for v := range verbs {
@@ -296,4 +301,16 @@ func TestNeedsSignInAndUnreachableSayWhatToDo(t *testing.T) {
 	if err != nil || s.Name != "runlayer-plugin" {
 		t.Fatalf("fallback %v %v", s.Name, err)
 	}
+}
+
+// verbRows reports whether noun.verb declares rows of the rows noun in doc.
+func verbRows(doc ocli.CatalogDoc, noun, verb, rows string) bool {
+	for _, n := range doc.AppNouns() {
+		for _, v := range n.Verbs {
+			if n.Name == noun && v.Name == verb {
+				return v.Rows == rows
+			}
+		}
+	}
+	return false
 }
