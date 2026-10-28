@@ -14,7 +14,8 @@ import (
 // The connection: o-slack reaches Slack only through an MCP server o-mcp's
 // client finds in the harnesses' configuration (slack.server names it).
 // Credentials are that server's own (its headers, a bearer-token variable,
-// a stdio server's env); o-slack holds and stores none.
+// a stdio server's env) or an OAuth sign-in o-mcp keeps in the Keychain
+// (`o-mcp login NAME`); o-slack holds and stores none.
 
 // Conn is one open session with the Slack MCP server.
 type Conn interface {
@@ -52,22 +53,33 @@ func findServer(servers []client.Server, ref string, fallbacks []string) (client
 	return client.Server{}, fmt.Errorf("slack.server is not set and no configured MCP server is named %s (o-mcp configured lists them; o-slack settings set slack.server NAME)", strings.Join(fallbacks, ", "))
 }
 
-// dialMCP is the real Dialer.
-func dialMCP(ctx context.Context, s client.Server) (Conn, error) {
-	sess, err := client.Connect(ctx, s, client.Options{})
-	if err != nil {
-		return nil, explainConnect(s, err)
+// dialMCP is the real Dialer: o-mcp's defaults, so a server signed in
+// with `o-mcp login` gets its token from the macOS Keychain. It is never
+// interactive: a scheduled poll never opens a browser.
+var dialMCP = dialWith(client.Options{})
+
+// dialWith is a Dialer connecting with o (a test's home and keyring).
+func dialWith(o client.Options) Dialer {
+	return func(ctx context.Context, s client.Server) (Conn, error) {
+		sess, err := client.Connect(ctx, s, o)
+		if err != nil {
+			return nil, explainConnect(s, err)
+		}
+		return sess, nil
 	}
-	return sess, nil
 }
 
 // explainConnect says what to do about a server o-slack cannot reach.
 func explainConnect(s client.Server, err error) error {
 	switch {
+	case client.IsNeedsLogin(err):
+		var n *client.NeedsLoginError
+		errors.As(err, &n)
+		return fmt.Errorf("%w\n%s needs an OAuth sign-in, and o-slack never opens a browser itself. Sign in once in a terminal:\n\n  %s\n\n"+
+			"o-mcp keeps the token in the macOS Keychain and refreshes it; o-slack stores none. Then run o-slack again", err, s.Name, n.Command())
 	case client.IsUnreachable(err):
 		return fmt.Errorf("%w\no-slack connects with the server's own configured credentials and stores no token. "+
-			"An OAuth-only entry needs o-mcp's OAuth follow-up (o-plans inbox-and-signals, L4); a gateway entry with a header or "+
-			"bearer-token variable works today (o-mcp test %s)", err, s.Name)
+			"The server rejected the header or bearer-token variable its config gives, or answered 403: check them with o-mcp test %s", err, s.Name)
 	case errors.Is(err, client.ErrDisabled):
 		return fmt.Errorf("%w: enable %s in %s", err, s.Name, s.Config)
 	}

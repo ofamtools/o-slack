@@ -254,7 +254,7 @@ func TestShellChannelsAndOncall(t *testing.T) {
 	}
 }
 
-func TestUnreachableServerSaysWhatToDo(t *testing.T) {
+func TestNeedsSignInAndUnreachableSayWhatToDo(t *testing.T) {
 	tool, _, _ := testTool(t, fakeOptions{})
 	// An OAuth-only gateway entry: the server answers 401 to a request
 	// without a credential. o-slack goes through o-mcp's real dialer.
@@ -266,9 +266,20 @@ func TestUnreachableServerSaysWhatToDo(t *testing.T) {
 	tool.resolve = func(string, []string) (client.Server, error) {
 		return client.NewServer("runlayer", map[string]any{"url": oauth.URL}), nil
 	}
-	tool.dial = dialMCP
+	// o-mcp's real dialer with a test home and keyring; a browser fails
+	// the test (a poll never opens one).
+	tool.dial = dialWith(client.Options{Home: t.TempDir(), Project: t.TempDir(), Getenv: func(string) string { return "" },
+		Keyring: client.NewMemoryKeyring(), OpenURL: func(u string) error { t.Errorf("a browser was opened for %s", u); return nil }})
 	_, err := sh(t, tool, "message", "mentions")
-	if err == nil || !strings.Contains(err.Error(), "stores no token") || !strings.Contains(err.Error(), "OAuth") {
+	if err == nil || !client.IsNeedsLogin(err) || !strings.Contains(err.Error(), "o-mcp login runlayer") || !strings.Contains(err.Error(), "never opens a browser") || strings.Contains(err.Error(), "unreachable") {
+		t.Fatalf("needs sign-in: %v", err)
+	}
+	// A configured credential the gateway rejects is unreachable.
+	tool.resolve = func(string, []string) (client.Server, error) {
+		return client.NewServer("runlayer", map[string]any{"url": oauth.URL, "headers": map[string]any{"Authorization": "Bearer wrong"}}), nil
+	}
+	_, err = sh(t, tool, "message", "mentions")
+	if err == nil || !client.IsUnreachable(err) || !strings.Contains(err.Error(), "o-mcp test runlayer") || strings.Contains(err.Error(), "o-mcp login") {
 		t.Fatalf("unreachable: %v", err)
 	}
 	// No server named and none of the candidates configured.

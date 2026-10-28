@@ -10,7 +10,7 @@
 
 <p align="center">The family's Slack page: mentions, DMs, replies in threads you watch and on-call activity in one place, with each new one sent to the mtm inbox.</p>
 
-o-slack (`o slack` under [oden](https://github.com/unixsuperhero/oden)'s `o`, or `o-slack`) reads Slack only through an MCP server, using [o-mcp](https://github.com/unixsuperhero/o-mcp)'s client and the credentials that server is already configured with. It holds no Slack token, stores none and never falls back to calling Slack directly. It never writes to Slack. What you watch, ignore and flag on-call is o-slack's own state, kept in its data directory.
+o-slack (`o slack` under [oden](https://github.com/unixsuperhero/oden)'s `o`, or `o-slack`) reads Slack only through an MCP server, using [o-mcp](https://github.com/unixsuperhero/o-mcp)'s client and that server's credentials: the ones its configuration gives, or an OAuth sign-in o-mcp keeps in the macOS Keychain (`o-mcp login`). It holds no Slack token, stores none and never falls back to calling Slack directly. It never writes to Slack. What you watch, ignore and flag on-call is o-slack's own state, kept in its data directory.
 
 Which of the server's tools does what is **settings, not code**. A gateway that names its tools or arguments differently is fixed with `o-slack settings set`, and `o-slack map check` tells you which lines to set.
 
@@ -30,36 +30,41 @@ gofmt -l . && go vet ./... && go test -race ./...
 go build -o ~/bin/o-slack .
 ```
 
-ochazuke (`v0.25.0`), oden (`v0.1.1`) and o-mcp (main at `9761b58`) are pinned in `go.mod`.
+ochazuke (`v0.25.0`) and oden (`v0.1.1`) are pinned in `go.mod`. o-mcp is replaced by its `oauth` worktree (`../../../o-mcp/.worktrees/oauth`) for the sign-in lane; the coordinator pins it to a commit before merging.
 
 ## On the work machine
 
 o-slack is meant for one machine: the work laptop, where Slack is reached through the company's Runlayer MCP gateway, which holds the Slack auth. Everything here was built against a fake server, so the first run there is a verification.
 
-1. **Install** o-mcp and o-slack (see Install). Check that the gateway is configured in a harness (Claude Code, Codex, ...): `o-mcp configured` lists it. o-mcp's client finds servers there; o-slack has no server list of its own.
-2. **Pick the server.** If its name is `runlayer`, `runlayer-plugin`, `slack` or `slack-no-dms`, o-slack finds it (in that order). Otherwise:
+1. **Install** o-mcp and o-slack (see Install).
+2. **Find the gateway.** `o-mcp configured` lists every server the harnesses (Claude Code, Codex, ...) configure; o-slack has no server list of its own. If the gateway's name is `runlayer`, `runlayer-plugin`, `slack` or `slack-no-dms`, o-slack finds it (in that order). Otherwise, and for the rest of you:
    ```sh
    o-slack settings set slack.server NAME      # a name or an ID from o-mcp configured
    o-slack settings set slack.me miso           # your handle
    o-slack settings set slack.me-id U0123ABC    # your user ID (the default mentions query uses it)
    o-slack settings set slack.workspace-url https://NAME.slack.com
    ```
-   If o-slack says the server is **unreachable** (a 401 or 403 with no header or bearer token in its config), the entry is OAuth-only. o-mcp cannot sign in to OAuth yet; that is the open o-mcp follow-up (o-plans, inbox-and-signals, L4). A gateway entry that carries a header or a bearer-token variable works today: `o-mcp test NAME` shows which kind you have.
-3. **Check the mapping.**
+3. **Sign in.** Runlayer asks for an OAuth sign-in in the browser:
    ```sh
-   o-mcp discover NAME                 # saves the tool schemas (no secrets)
+   o-mcp login runlayer          # opens the browser; prints the URL too
+   o-mcp auth status runlayer    # signed-in, issuer, expiry, scopes (never the token)
+   ```
+   o-mcp keeps the tokens in the macOS Keychain (service `o-mcp`) and refreshes them; o-slack stores none. o-slack never opens a browser itself, so a scheduled `o-slack signals` never pops a window. When the sign-in lapses, o-slack fails with **needs sign-in** and the exact `o-mcp login` command to run. **Unreachable** is something else: the gateway rejected the header or bearer-token variable its config gives, or answered 403 (`o-mcp test runlayer` shows which).
+4. **Save the schemas and check the mapping.**
+   ```sh
+   o-mcp discover runlayer             # saves the tool schemas (no secrets)
    o-slack map check --format table    # live, through the server
    o-slack map check --offline         # the same against o-mcp's saved schemas
    ```
    Each operation is `ok`, `missing` (the tool named is not listed), `unmapped` (no candidate is listed), `args` (an argument was renamed, or one the tool requires is not sent) or `optional` (permalink only). Each problem prints the line that fixes it.
-4. **Fix the mapping in settings.** Paste the `fix:` lines, for example:
+5. **Fix the mapping in settings.** Paste the `fix:` lines, for example:
    ```sh
    o-slack settings set slack.tools.history slack_channel_history
    o-slack settings set slack.args.thread '["channel=channel_id","ts=thread_ts","limit=limit"]'
    o-slack settings set slack.results.search '["items=data.hits","text=body.plain"]'
    ```
-   Run `map check` again until the summary says `every operation maps`. A tool renamed to a name o-slack does not know falls back to its own parameter names, so expect a second round for its arguments. `o-slack map show` shows where each choice came from (settings, candidate or default). For results, `o-mcp call NAME TOOL --data '{...}'` shows a real answer to map fields from.
-5. **Look before sending.**
+   Run `map check` again until the summary says `every operation maps`. A tool renamed to a name o-slack does not know falls back to its own parameter names, so expect a second round for its arguments. `o-slack map show` shows where each choice came from (settings, candidate or default). For results, `o-mcp call runlayer TOOL --data '{...}'` shows a real answer to map fields from.
+6. **Look before sending.**
    ```sh
    o-slack message mentions --format table
    o-slack signals --dry-run      # the first real run records a baseline and sends nothing
@@ -189,7 +194,7 @@ The key rows are the catalog's, so mtm's page answers them too, and `bindings.js
 ## In the family
 
 - **mtm.** o-slack is an extension: mtm mounts the Slack page from `o-slack catalog` and runs its verbs as `o-slack NOUN VERB --target ID`. Signals go in through mtm's command line only.
-- **o-mcp.** o-slack is a client of `o-mcp/client`: it uses `Configured` and `Find` to pick the server, `Connect` to open it, and `Session.Tools` and `Session.Call` to use it. `map check --offline` reads o-mcp's saved schemas (`Store`). Auth is o-mcp's alone.
+- **o-mcp.** o-slack is a client of `o-mcp/client`: it uses `Configured` and `Find` to pick the server, `Connect` to open it (never interactive), and `Session.Tools` and `Session.Call` to use it. `map check --offline` reads o-mcp's saved schemas (`Store`). Auth is o-mcp's alone: `client.IsNeedsLogin` becomes the needs-sign-in message with `o-mcp login NAME`, `client.IsUnreachable` the rejected-credential one.
 - **o-gh.** The same shape for GitHub: page, collections, the signals seam, tests.
 
 ## Logo
