@@ -76,8 +76,8 @@ github.com/unixsuperhero/o-ai v0.0.0-20261028061635-df9ff42d438a h1:PdIRiK0ufUlA
 github.com/unixsuperhero/o-ai v0.0.0-20261028061635-df9ff42d438a/go.mod h1:RaVjOgieuqa5QjdzZc4eq8cQ2Z6C0hXugm0cfALlwaQ=
 github.com/unixsuperhero/o-mcp v0.0.0-20261028153033-c9a3b072172a h1:W4On5sTKgk9crHlwEK8hZmIJ/l5laNdddiYGYagPAg8=
 github.com/unixsuperhero/o-mcp v0.0.0-20261028153033-c9a3b072172a/go.mod h1:vqdOgrwycduuLAZu+GBIZt/F1c8fsnAlDG39Rhz6xEs=
-github.com/unixsuperhero/ochazuke v0.25.0 h1:ZgAoTbrSJw/a5JMAP4bil3fbLn+UVdW42oIp3dATpKw=
-github.com/unixsuperhero/ochazuke v0.25.0/go.mod h1:BO2IxrpPy2dfcPQl1j1MzpU9DDZ90Z4t46KOkC0sYkk=
+github.com/unixsuperhero/ochazuke v0.31.0 h1:3zVkAluDUnVjXIYvVi/0ektdmmMEteaPcTrQta3gY24=
+github.com/unixsuperhero/ochazuke v0.31.0/go.mod h1:BO2IxrpPy2dfcPQl1j1MzpU9DDZ90Z4t46KOkC0sYkk=
 github.com/unixsuperhero/oden v0.1.1 h1:g7wpBYIw+7oCNAhRj6oDuBxWrbGj1amvn8x49o7YbaI=
 github.com/unixsuperhero/oden v0.1.1/go.mod h1:rKy5pz2e3eEKm4QBG/LfdzrHDMu7jHbs/GXwt9G1+YQ=
 github.com/xo/terminfo v1.0.0 h1:2ZpYzqWzyyytjk3TP6aJVDhkMAkc99/1xKQdA3TDTBY=
