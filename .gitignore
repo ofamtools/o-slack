@@ -1,0 +1,5 @@
+.DS_Store
+/o-slack
+/.worktrees
+go.work
+go.work.sum

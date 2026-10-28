@@ -1,0 +1,24 @@
+{
+  "workspace": "https://teashop.slack.com",
+  "channels": [
+    {"id": "C0ENG", "name": "eng", "topic": {"value": "kitchen software"}, "num_members": 12},
+    {"id": "C0OPS", "name": "ops-alerts", "topic": {"value": "pages and deploys"}, "num_members": 30},
+    {"id": "C0RAND", "name": "random", "topic": {"value": "cake"}, "num_members": 40, "is_private": false},
+    {"id": "D0BOB", "name": "bob", "is_im": true}
+  ],
+  "users": [
+    {"id": "U0ME", "name": "miso", "real_name": "Miso Shiru", "profile": {"title": "Tea engineer", "email": "miso@teashop.example"}, "tz": "Asia/Tokyo"},
+    {"id": "U0BOB", "name": "bob", "real_name": "Bob Sencha", "profile": {"title": "Steeper"}},
+    {"id": "U0ANN", "name": "ann", "real_name": "Ann Matcha", "profile": {"title": "Grader"}},
+    {"id": "U0BOT", "name": "deploybot", "real_name": "Deploy Bot", "profile": {"title": "bot"}}
+  ],
+  "messages": [
+    {"channel": "C0ENG", "ts": "1793160000.000100", "user": "U0ANN", "text": "<@U0ME> can you look at the deploy?", "reply_count": 1},
+    {"channel": "C0ENG", "ts": "1793163600.000200", "thread_ts": "1793160000.000100", "user": "U0BOB", "text": "on it? the timer is stuck"},
+    {"channel": "D0BOB", "ts": "1793164000.000300", "user": "U0BOB", "text": "lunch at noon?"},
+    {"channel": "C0OPS", "ts": "1793165000.000400", "user": "U0BOT", "text": "deploy failed on prod"},
+    {"channel": "C0RAND", "ts": "1793166000.000500", "user": "U0ANN", "text": "cake in the kitchen"},
+    {"channel": "C0ENG", "ts": "1793166500.000600", "user": "U0ME", "text": "<@U0ME> note to self: steep longer"},
+    {"channel": "C0RAND", "ts": "1793100000.000700", "user": "U0BOB", "text": "@oncall the kettle is paging"}
+  ]
+}
