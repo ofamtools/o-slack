@@ -1,4 +1,4 @@
-module github.com/unixsuperhero/o-slack
+module ofam.dev/o-slack
 
 go 1.27.1
 
@@ -6,9 +6,9 @@ require (
 	charm.land/bubbletea/v2 v2.1.0
 	github.com/charmbracelet/x/ansi v0.11.9
 	github.com/modelcontextprotocol/go-sdk v1.6.1
-	github.com/unixsuperhero/o-mcp v0.0.0-20261028153033-c9a3b072172a
-	github.com/unixsuperhero/ochazuke v0.31.0
-	github.com/unixsuperhero/oden v0.1.1
+	ofam.dev/o-mcp v0.0.0-20261028153033-c9a3b072172a
+	ofam.dev/ochazuke v0.31.0
+	ofam.dev/oden v0.1.1
 )
 
 require (
@@ -35,7 +35,7 @@ require (
 	github.com/segmentio/asm v1.1.3 // indirect
 	github.com/segmentio/encoding v0.5.4 // indirect
 	github.com/tailscale/hujson v0.0.0-20221223112325-20486734a56a // indirect
-	github.com/unixsuperhero/o-ai v0.0.0-20261028061635-df9ff42d438a // indirect
+	ofam.dev/o-ai v0.0.0-20261028061635-df9ff42d438a // indirect
 	github.com/xo/terminfo v1.0.0 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	golang.org/x/oauth2 v0.35.0 // indirect

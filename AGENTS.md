@@ -1,6 +1,6 @@
 # o-slack: agent guide
 
-`o-slack` (so `o slack`) is the family's Slack tool. It provides the Slack page (Mentions, DMs, Threads, On-call, Channels) and sends signals into the mtm inbox. It reaches Slack only through an MCP server, via `github.com/unixsuperhero/o-mcp/client`, and never writes to Slack. It runs only on the owner's work machine, where the Slack MCP server is the company's Runlayer gateway. Here it is built and tested against a fake go-sdk server. Design: `~/hub/o-plans/plans/inbox-and-signals.md` (lane L4).
+`o-slack` (so `o slack`) is the family's Slack tool. It provides the Slack page (Mentions, DMs, Threads, On-call, Channels) and sends signals into the mtm inbox. It reaches Slack only through an MCP server, via `ofam.dev/o-mcp/client`, and never writes to Slack. It runs only on the owner's work machine, where the Slack MCP server is the company's Runlayer gateway. Here it is built and tested against a fake go-sdk server. Design: `~/hub/o-plans/plans/inbox-and-signals.md` (lane L4).
 
 It meets mtm only through each other's command line. mtm mounts the page from `o-slack catalog` and runs `o-slack NOUN VERB --target ID`. o-slack runs `mtm action-item add --source slack --key KEY --url URL --title T --why WHY`, which is spelled once, in `inboxCommand`.
 
@@ -37,4 +37,4 @@ Family plans, todos and the roadmap live in `~/hub/o-plans/` (`README.md` is the
 - Tests use the fake MCP server (in memory) and a fake inbox. They reach no Slack, no real MCP server and no mtm. Live verification happens on the work machine only (README, "On the work machine").
 - Every commit: `gofmt -l . && go vet ./... && go test -race ./...` green (`GOWORK=off GOFLAGS=-trimpath`), and `go run . catalog` answers. No amends.
 
-Build: `go build -o ~/bin/o-slack .`. Pinned in `go.mod`: ochazuke `v0.31.0`, oden `v0.1.1`; o-mcp is replaced by its `oauth` worktree during the sign-in lane (the coordinator pins it). o-mcp is private: fetch with `GOPRIVATE=github.com/unixsuperhero/* GOPROXY=direct`.
+Build: `go build -o ~/bin/o-slack .`. Pinned in `go.mod`: ochazuke `v0.31.0`, oden `v0.1.1`; o-mcp is replaced by its `oauth` worktree during the sign-in lane (the coordinator pins it). o-mcp is private: fetch with `GOPRIVATE=ofam.dev/* GOPROXY=direct`.

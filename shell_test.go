@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/unixsuperhero/o-mcp/client"
-	ocli "github.com/unixsuperhero/ochazuke/cli"
+	"ofam.dev/o-mcp/client"
+	ocli "ofam.dev/ochazuke/cli"
 )
 
 // sh runs one o-slack command line on a fresh Tool sharing tool's fakes and

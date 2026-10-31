@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/unixsuperhero/o-mcp/client"
+	"ofam.dev/o-mcp/client"
 )
 
 // The tests' Slack: fakeSlack is a go-sdk MCP server, served in memory,

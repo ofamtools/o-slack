@@ -4,22 +4,22 @@
     <img alt="o-slack" src="assets/logo-light.svg" width="300">
   </picture>
   <br>
-  <a href="go.mod"><img alt="Go version" src="https://img.shields.io/github/go-mod/go-version/unixsuperhero/o-slack"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/unixsuperhero/o-slack"></a>
+  <a href="go.mod"><img alt="Go version" src="https://img.shields.io/github/go-mod/go-version/ofamtools/o-slack"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/ofamtools/o-slack"></a>
 </p>
 
 <p align="center">The family's Slack page: mentions, DMs, replies in threads you watch and on-call activity in one place, with each new one sent to the mtm inbox.</p>
 
-o-slack (`o slack` under [oden](https://github.com/unixsuperhero/oden)'s `o`, or `o-slack`) reads Slack only through an MCP server, using [o-mcp](https://github.com/unixsuperhero/o-mcp)'s client and that server's credentials: the ones its configuration gives, or an OAuth sign-in o-mcp keeps in the macOS Keychain (`o-mcp login`). It holds no Slack token, stores none and never falls back to calling Slack directly. It never writes to Slack. What you watch, ignore and flag on-call is o-slack's own state, kept in its data directory.
+o-slack (`o slack` under [oden](https://github.com/ofamtools/oden)'s `o`, or `o-slack`) reads Slack only through an MCP server, using [o-mcp](https://github.com/ofamtools/o-mcp)'s client and that server's credentials: the ones its configuration gives, or an OAuth sign-in o-mcp keeps in the macOS Keychain (`o-mcp login`). It holds no Slack token, stores none and never falls back to calling Slack directly. It never writes to Slack. What you watch, ignore and flag on-call is o-slack's own state, kept in its data directory.
 
 Which of the server's tools does what is **settings, not code**. A gateway that names its tools or arguments differently is fixed with `o-slack settings set`, and `o-slack map check` tells you which lines to set.
 
 ## Install
 
-Module `github.com/unixsuperhero/o-slack`; requires Go 1.27 or newer. o-mcp is a private module:
+Module `ofam.dev/o-slack`; requires Go 1.27 or newer. o-mcp is a private module:
 
 ```sh
-GOPRIVATE='github.com/unixsuperhero/*' GOPROXY=direct go install github.com/unixsuperhero/o-slack@latest
+GOPRIVATE='ofam.dev/*' GOPROXY=direct go install ofam.dev/o-slack@latest
 ```
 
 or, from a checkout:

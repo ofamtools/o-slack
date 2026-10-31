@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	ocli "github.com/unixsuperhero/ochazuke/cli"
+	ocli "ofam.dev/ochazuke/cli"
 )
 
 // A message row: id slack-message/CHANNEL/TS (what --target takes), label

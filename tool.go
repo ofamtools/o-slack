@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/unixsuperhero/o-mcp/client"
-	"github.com/unixsuperhero/ochazuke"
+	"ofam.dev/o-mcp/client"
+	"ofam.dev/ochazuke"
 )
 
 // Tool is o-slack: its runtime (nouns, verbs, settings, the Slack page),

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/unixsuperhero/o-mcp/client"
+	"ofam.dev/o-mcp/client"
 )
 
 // The connection: o-slack reaches Slack only through an MCP server o-mcp's

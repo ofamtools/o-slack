@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/unixsuperhero/o-mcp/client"
+	"ofam.dev/o-mcp/client"
 )
 
 func emptyMap() MapSettings {

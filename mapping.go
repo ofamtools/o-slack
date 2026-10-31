@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/unixsuperhero/o-mcp/client"
+	"ofam.dev/o-mcp/client"
 )
 
 // The mapping: o-slack's operations (search, history, thread, channels,
