@@ -236,8 +236,8 @@ func TestMapCheckCommand(t *testing.T) {
 		t.Fatalf("schemas file rows %+v", rows)
 	}
 	// Fix it with settings only; the check passes and a poll reads the thread.
-	sh(t, tool, "settings", "set", "slack.tools.history", "slack_channel_history")
-	if _, err := sh(t, tool, "settings", "set", "slack.args.thread", `["channel=channel_id","ts=thread_ts","limit=limit"]`); err != nil {
+	sh(t, tool, "settings", "set", "--yes", "slack.tools.history", "slack_channel_history")
+	if _, err := sh(t, tool, "settings", "set", "--yes", "slack.args.thread", `["channel=channel_id","ts=thread_ts","limit=limit"]`); err != nil {
 		t.Fatal(err)
 	}
 	// The renamed tool is no candidate, so its arguments are next: the check
@@ -247,7 +247,7 @@ func TestMapCheckCommand(t *testing.T) {
 	if !strings.Contains(out, "1 of 6 operations need a fix") || !strings.Contains(out, fix) {
 		t.Fatalf("after the first fix:\n%s", out)
 	}
-	sh(t, tool, "settings", "set", "slack.args.history", `["channel=channel_id","oldest=oldest","limit=limit"]`)
+	sh(t, tool, "settings", "set", "--yes", "slack.args.history", `["channel=channel_id","oldest=oldest","limit=limit"]`)
 	out, _ = sh(t, tool, "map", "check", "--format", "table")
 	if !strings.Contains(out, "every operation maps") { // permalink, which has no tool, is optional
 		t.Fatalf("after fix:\n%s", out)
