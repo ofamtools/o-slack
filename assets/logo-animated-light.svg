@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 403 96" width="403" height="96" role="img" aria-label="o-slack">
+<title>o-slack</title>
+<style>.bb{transform-box:fill-box;transform-origin:14.6% 100%}@media (prefers-reduced-motion: no-preference){.bb{animation:ping 3.4s cubic-bezier(.45,0,.25,1) infinite}@keyframes ping{0%{transform:none}6%{transform:rotate(0deg) scale(0.95,0.95)}14%{transform:rotate(-2deg) scale(1.05,1.05)}22%{transform:rotate(1deg) scale(0.99,0.99)}30%,100%{transform:none}}}</style>
+<g transform="translate(-20 -16)">
+<g class="bb"><path d="M40 20H88A24 24 0 0 1 112 44V68A24 24 0 0 1 88 92H56L30 106L34 90A24 24 0 0 1 16 68V44A24 24 0 0 1 40 20Z" fill="#237a45"/><path d="M58 34L52 78M78 34L72 78M40 46H90M38 66H88" fill="none" stroke="#e6f8ec" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>
+
+</g>
+<path d="M132 44a20 20 0 1 0 0.01 0M167 64h16M228 50A15 10 0 0 0 213 44A15 10 0 0 0 213 64A15 10 0 0 1 213 84A15 10 0 0 1 198 78M243 18V84M278 44a20 20 0 1 0 0.01 0M298 44V84M347.1 49.9A20 20 0 1 0 347.1 78.1M362.1 18V84M393.1 44L362.1 70M373.1 61L394.1 84" fill="none" stroke="#0f2618" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
