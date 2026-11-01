@@ -12,7 +12,7 @@ Family plans, todos and the roadmap live in `~/hub/o-plans/` (`README.md` is the
 
 | Concern | File |
 |---|---|
-| `main`, the oden app, `--target` reveal, `o-slack signals` | `main.go` |
+| `main`, the oden app, `--target` reveal, `o slack signals` | `main.go` |
 | Server resolution (`slack.server`, fallbacks), the dialer (`dialMCP`, `dialWith`), the needs-sign-in and unreachable messages, o-mcp's store | `conn.go` |
 | The operations, the candidate tool table, args and result paths, `map check`, record extraction, prose | `mapping.go` |
 | `Message`, `Channel`, on-call window, `classify`, the poll | `slack.go` |
@@ -29,7 +29,7 @@ Family plans, todos and the roadmap live in `~/hub/o-plans/` (`README.md` is the
 ## Invariants
 
 - Read only toward Slack. No verb maps or calls a write tool (`writeTool` filters suggestions). Watched, ignored and on-call marks are o-slack's own.
-- Auth goes only through o-mcp/client: the server's own configured credentials, or an OAuth sign-in o-mcp keeps in the Keychain (`o-mcp login`). Never store a token, never call Slack directly, and never connect interactively: a poll fails with the login command, it never opens a browser.
+- Auth goes only through o-mcp/client: the server's own configured credentials, or an OAuth sign-in o-mcp keeps in the Keychain (`o mcp login`). Never store a token, never call Slack directly, and never connect interactively: a poll fails with the login command, it never opens a browser.
 - The tool mapping is settings (`slack.tools.*`, `slack.args.*`, `slack.results.*`) over one table (`candidates`). Fix a server's names with settings, not code.
 - Record first: watch, ignore, on-call and send-to-inbox work on a message or channel o-slack has not read.
 - Signals: the first run is a baseline. Backlog (older than the last run less `overlap`) sends nothing. Unsent signals stay pending. `--dry-run` writes nothing.

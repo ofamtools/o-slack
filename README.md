@@ -10,15 +10,16 @@
 
 <p align="center">The family's Slack page: mentions, DMs, replies in threads you watch and on-call activity in one place, with each new one sent to the mtm inbox.</p>
 
-o-slack (`o slack` under [oden](https://github.com/ofamtools/oden)'s `o`, or `o-slack`) reads Slack only through an MCP server, using [o-mcp](https://github.com/ofamtools/o-mcp)'s client and that server's credentials: the ones its configuration gives, or an OAuth sign-in o-mcp keeps in the macOS Keychain (`o-mcp login`). It holds no Slack token, stores none and never falls back to calling Slack directly. It never writes to Slack. What you watch, ignore and flag on-call is o-slack's own state, kept in its data directory.
+o-slack (`o slack` under [oden](https://github.com/ofamtools/oden)'s `o`, or `o-slack`) reads Slack only through an MCP server, using [o-mcp](https://github.com/ofamtools/o-mcp)'s client and that server's credentials: the ones its configuration gives, or an OAuth sign-in o-mcp keeps in the macOS Keychain (`o mcp login`). It holds no Slack token, stores none and never falls back to calling Slack directly. It never writes to Slack. What you watch, ignore and flag on-call is o-slack's own state, kept in its data directory.
 
-Which of the server's tools does what is **settings, not code**. A gateway that names its tools or arguments differently is fixed with `o-slack settings set`, and `o-slack map check` tells you which lines to set.
+Which of the server's tools does what is **settings, not code**. A gateway that names its tools or arguments differently is fixed with `o slack settings set`, and `o slack map check` tells you which lines to set.
 
 ## Install
 
 Module `ofam.dev/o-slack`; requires Go 1.27 or newer. o-mcp is a private module:
 
 ```sh
+go install ofam.dev/oden/cmd/o@latest   # oden's o: `o slack` runs o-slack, no dash needed
 GOPRIVATE='ofam.dev/*' GOPROXY=direct go install ofam.dev/o-slack@latest
 ```
 
@@ -37,62 +38,62 @@ ochazuke (`v0.25.0`) and oden (`v0.1.1`) are pinned in `go.mod`. o-mcp is replac
 o-slack is meant for one machine: the work laptop, where Slack is reached through the company's Runlayer MCP gateway, which holds the Slack auth. Everything here was built against a fake server, so the first run there is a verification.
 
 1. **Install** o-mcp and o-slack (see Install).
-2. **Find the gateway.** `o-mcp configured` lists every server the harnesses (Claude Code, Codex, ...) configure; o-slack has no server list of its own. If the gateway's name is `runlayer`, `runlayer-plugin`, `slack` or `slack-no-dms`, o-slack finds it (in that order). Otherwise, and for the rest of you:
+2. **Find the gateway.** `o mcp configured` lists every server the harnesses (Claude Code, Codex, ...) configure; o-slack has no server list of its own. If the gateway's name is `runlayer`, `runlayer-plugin`, `slack` or `slack-no-dms`, o-slack finds it (in that order). Otherwise, and for the rest of you:
    ```sh
-   o-slack settings set slack.server NAME      # a name or an ID from o-mcp configured
-   o-slack settings set slack.me miso           # your handle
-   o-slack settings set slack.me-id U0123ABC    # your user ID (the default mentions query uses it)
-   o-slack settings set slack.workspace-url https://NAME.slack.com
+   o slack settings set slack.server NAME      # a name or an ID from o mcp configured
+   o slack settings set slack.me miso           # your handle
+   o slack settings set slack.me-id U0123ABC    # your user ID (the default mentions query uses it)
+   o slack settings set slack.workspace-url https://NAME.slack.com
    ```
 3. **Sign in.** Runlayer asks for an OAuth sign-in in the browser:
    ```sh
-   o-mcp login runlayer          # opens the browser; prints the URL too
-   o-mcp auth status runlayer    # signed-in, issuer, expiry, scopes (never the token)
+   o mcp login runlayer          # opens the browser; prints the URL too
+   o mcp auth status runlayer    # signed-in, issuer, expiry, scopes (never the token)
    ```
-   o-mcp keeps the tokens in the macOS Keychain (service `o-mcp`) and refreshes them; o-slack stores none. o-slack never opens a browser itself, so a scheduled `o-slack signals` never pops a window. When the sign-in lapses, o-slack fails with **needs sign-in** and the exact `o-mcp login` command to run. **Unreachable** is something else: the gateway rejected the header or bearer-token variable its config gives, or answered 403 (`o-mcp test runlayer` shows which).
+   o-mcp keeps the tokens in the macOS Keychain (service `o-mcp`) and refreshes them; o-slack stores none. o-slack never opens a browser itself, so a scheduled `o slack signals` never pops a window. When the sign-in lapses, o-slack fails with **needs sign-in** and the exact `o-mcp login` command to run. **Unreachable** is something else: the gateway rejected the header or bearer-token variable its config gives, or answered 403 (`o mcp test runlayer` shows which).
 4. **Save the schemas and check the mapping.**
    ```sh
-   o-mcp discover runlayer             # saves the tool schemas (no secrets)
-   o-slack map check --format table    # live, through the server
-   o-slack map check --offline         # the same against o-mcp's saved schemas
+   o mcp discover runlayer             # saves the tool schemas (no secrets)
+   o slack map check --format table    # live, through the server
+   o slack map check --offline         # the same against o-mcp's saved schemas
    ```
    Each operation is `ok`, `missing` (the tool named is not listed), `unmapped` (no candidate is listed), `args` (an argument was renamed, or one the tool requires is not sent) or `optional` (permalink only). Each problem prints the line that fixes it.
 5. **Fix the mapping in settings.** Paste the `fix:` lines, for example:
    ```sh
-   o-slack settings set slack.tools.history slack_channel_history
-   o-slack settings set slack.args.thread '["channel=channel_id","ts=thread_ts","limit=limit"]'
-   o-slack settings set slack.results.search '["items=data.hits","text=body.plain"]'
+   o slack settings set slack.tools.history slack_channel_history
+   o slack settings set slack.args.thread '["channel=channel_id","ts=thread_ts","limit=limit"]'
+   o slack settings set slack.results.search '["items=data.hits","text=body.plain"]'
    ```
-   Run `map check` again until the summary says `every operation maps`. A tool renamed to a name o-slack does not know falls back to its own parameter names, so expect a second round for its arguments. `o-slack map show` shows where each choice came from (settings, candidate or default). For results, `o-mcp call runlayer TOOL --data '{...}'` shows a real answer to map fields from.
+   Run `map check` again until the summary says `every operation maps`. A tool renamed to a name o-slack does not know falls back to its own parameter names, so expect a second round for its arguments. `o slack map show` shows where each choice came from (settings, candidate or default). For results, `o mcp call runlayer TOOL --data '{...}'` shows a real answer to map fields from.
 6. **Look before sending.**
    ```sh
-   o-slack message mentions --format table
-   o-slack signals --dry-run      # the first real run records a baseline and sends nothing
-   o-slack signals                # then from a schedule
+   o slack message mentions --format table
+   o slack signals --dry-run      # the first real run records a baseline and sends nothing
+   o slack signals                # then from a schedule
    ```
 
-Bring back the saved schemas (`o-mcp discover` output, no secrets) and any settings you had to change, so the defaults table below can be corrected.
+Bring back the saved schemas (`o mcp discover` output, no secrets) and any settings you had to change, so the defaults table below can be corrected.
 
 ## Usage
 
 ```sh
-o-slack                                         # the Slack page (also o-slack view; --smoke renders one frame)
-o-slack message mentions|dms|threads|oncall|ignored
-o-slack message list [--collection C] [--fresh]
-o-slack message show|open|copy-link|read-thread|author|channel --target MSG
-o-slack message watch-thread|unwatch-thread|ignore|unignore --target MSG
-o-slack message send-to-inbox [WHY] --target MSG
-o-slack message refresh                         # poll now; the counts
-o-slack channel list [--fresh]
-o-slack channel show|open|copy-link|history --target CHANNEL
-o-slack channel watch|unwatch|ignore|unignore|oncall|not-oncall --target CHANNEL
-o-slack channel send-to-inbox [WHY] --target CHANNEL
-o-slack user show|open|copy-id --target USER
-o-slack map check|show [--offline] [--schemas FILE]
-o-slack map candidates                          # the default tool table
-o-slack signals [--dry-run]                     # also signal preview / signal push
-o-slack settings list|set|reset
-o-slack catalog                                 # the nouns, verbs and page, for mtm
+o slack                                         # the Slack page (also o slack view; --smoke renders one frame)
+o slack message mentions|dms|threads|oncall|ignored
+o slack message list [--collection C] [--fresh]
+o slack message show|open|copy-link|read-thread|author|channel --target MSG
+o slack message watch-thread|unwatch-thread|ignore|unignore --target MSG
+o slack message send-to-inbox [WHY] --target MSG
+o slack message refresh                         # poll now; the counts
+o slack channel list [--fresh]
+o slack channel show|open|copy-link|history --target CHANNEL
+o slack channel watch|unwatch|ignore|unignore|oncall|not-oncall --target CHANNEL
+o slack channel send-to-inbox [WHY] --target CHANNEL
+o slack user show|open|copy-id --target USER
+o slack map check|show [--offline] [--schemas FILE]
+o slack map candidates                          # the default tool table
+o slack signals [--dry-run]                     # also signal preview / signal push
+o slack settings list|set|reset
+o slack catalog                                 # the nouns, verbs and page, for mtm
 ```
 
 `MSG` is a row id `slack-message/CHANNEL/TS`, `CHANNEL/TS` or a permalink. `CHANNEL` is `slack-channel/ID`, an ID or `#name`. `USER` is `slack-user/ID` or an ID. The nouns have short aliases: `message`, `channel`, `user`, `signal`, `map`. A list verb answers rows (`{noun, id, label, data, cells}`); `--format table` prints them as a table.
@@ -112,7 +113,7 @@ o-slack needs six operations from the server. For each one, `slack.tools.OP` nam
 | `user` | `slack-user show`, `message author` | `slack_read_user_profile` (user=user_id); `slack_get_user_profile` | low |
 | `permalink` | only when a result has no permalink and `slack.workspace-url` is unset | `slack_get_permalink` | low; optional |
 
-The table lives in `mapping.go` (`candidates`), and `o-slack map candidates` prints it. `slack.args.OP` overrides the arguments as `PARAM=SERVER_ARG` pairs plus `SERVER_ARG:=VALUE` constants (a JSON value). `slack.results.OP` says where each field sits in the answer, as `FIELD=PATH` (dotted keys, `|` between alternatives) over defaults that cover Slack's Web API spellings. Results are read from `structuredContent`, or from a single JSON text block. A prose answer is read for permalinks, one message per paragraph, with a leading `**name** in #channel` taken as the author and channel. A reply is a message whose `thread_ts` differs from its `ts`.
+The table lives in `mapping.go` (`candidates`), and `o slack map candidates` prints it. `slack.args.OP` overrides the arguments as `PARAM=SERVER_ARG` pairs plus `SERVER_ARG:=VALUE` constants (a JSON value). `slack.results.OP` says where each field sits in the answer, as `FIELD=PATH` (dotted keys, `|` between alternatives) over defaults that cover Slack's Web API spellings. Results are read from `structuredContent`, or from a single JSON text block. A prose answer is read for permalinks, one message per paragraph, with a leading `**name** in #channel` taken as the author and channel. A reply is a message whose `thread_ts` differs from its `ts`.
 
 Write tools (send, post, react, ...) are never suggested and never called.
 
@@ -134,7 +135,7 @@ Your own messages are in no collection.
 
 ### Signals
 
-`o-slack signals` polls once (it reads from the last run, less ten minutes, at most `poll.lookback` back) and sends each new message that is a mention, DM, watched-thread reply, on-call message or watched-channel message:
+`o slack signals` polls once (it reads from the last run, less ten minutes, at most `poll.lookback` back) and sends each new message that is a mention, DM, watched-thread reply, on-call message or watched-channel message:
 
 ```sh
 mtm action-item add --source slack --key CHANNEL/TS --url PERMALINK --title TITLE --why WHY [--text TEXT]
@@ -194,7 +195,7 @@ The key rows are the catalog's, so mtm's page answers them too, and `bindings.js
 ## In the family
 
 - **mtm.** o-slack is an extension: mtm mounts the Slack page from `o-slack catalog` and runs its verbs as `o-slack NOUN VERB --target ID`. Signals go in through mtm's command line only.
-- **o-mcp.** o-slack is a client of `o-mcp/client`: it uses `Configured` and `Find` to pick the server, `Connect` to open it (never interactive), and `Session.Tools` and `Session.Call` to use it. `map check --offline` reads o-mcp's saved schemas (`Store`). Auth is o-mcp's alone: `client.IsNeedsLogin` becomes the needs-sign-in message with `o-mcp login NAME`, `client.IsUnreachable` the rejected-credential one.
+- **o-mcp.** o-slack is a client of `o-mcp/client`: it uses `Configured` and `Find` to pick the server, `Connect` to open it (never interactive), and `Session.Tools` and `Session.Call` to use it. `map check --offline` reads o-mcp's saved schemas (`Store`). Auth is o-mcp's alone: `client.IsNeedsLogin` becomes the needs-sign-in message with `o mcp login NAME`, `client.IsUnreachable` the rejected-credential one.
 - **o-gh.** The same shape for GitHub: page, collections, the signals seam, tests.
 
 ## Logo
